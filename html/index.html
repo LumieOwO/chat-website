@@ -76,36 +76,3 @@
     </div>
   </body>
 </html>
-
-    <script>
-    let username = prompt("Please enter your username:");
-    function askforusername(){if (username != null && username != ""){}else{askforusername()}}
-      function connect() {
-        let socket = new WebSocket('ws://127.0.0.2:8000');
-        socket.addEventListener('message', event => {
-          let message = event.data.startsWith('42/msg') ? event.data.slice(6) : event.data;
-          let messageElement = document.createElement('div');
-          messageElement.textContent = message;
-          document.getElementById('messages').appendChild(messageElement);
-        });
-        socket.addEventListener('close', event => {
-          setTimeout(() => {
-            connect();
-          }, 1000);
-        });
-        document.getElementById('message-form').addEventListener('submit', event => {
-          event.preventDefault();
-          let messageInput = document.getElementById('message-input');
-          let message = messageInput.value;
-          if (message) {
-            message = `${username}: ${message}`;
-            socket.send(message);
-            messageInput.value = '';
-          }
-        });
-      }
-      askforusername()
-      connect();
-    </script>
-  </body>
-</html>
