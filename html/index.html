@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lumie's uwu chat</title>
+    <style>
+        body {
+    background: linear-gradient(to right, #141414, #222);
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+  }
+
+  #chat {
+    margin: auto;
+    max-width: 600px;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 10px;
+    background-color: #1b1b1b;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+
+  #messages {
+    height: 400px;
+    overflow-y: scroll;
+    border: 1px solid white;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #222;
+  }
+
+  #messages p {
+    margin: 0;
+  }
+
+  #message-form {
+    display: flex;
+  }
+
+  #message-input {
+    flex-grow: 1;
+    padding: 10px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #333;
+    color: white;
+  }
+
+  #message-button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  #message-button:hover {
+    background-color: #0056b3;
+  }
+    </style>
+  </head>       
+  <body>
+    <div id="chat">
+      <div id="messages">
+      </div>
+      <form id="message-form">
+        <input type="text" id="message-input" placeholder="Type your message here...">
+        <button id="message-button">Send</button>
+      </form>
+    </div>
+  </body>
+</html>
+
+    <script>
+    let username = prompt("Please enter your username:");
+    function askforusername(){if (username != null && username != ""){}else{askforusername()}}
+      function connect() {
+        let socket = new WebSocket('ws://127.0.0.2:8000');
+        socket.addEventListener('message', event => {
+          let message = event.data.startsWith('42/msg') ? event.data.slice(6) : event.data;
+          let messageElement = document.createElement('div');
+          messageElement.textContent = message;
+          document.getElementById('messages').appendChild(messageElement);
+        });
+        socket.addEventListener('close', event => {
+          setTimeout(() => {
+            connect();
+          }, 1000);
+        });
+        document.getElementById('message-form').addEventListener('submit', event => {
+          event.preventDefault();
+          let messageInput = document.getElementById('message-input');
+          let message = messageInput.value;
+          if (message) {
+            message = `${username}: ${message}`;
+            socket.send(message);
+            messageInput.value = '';
+          }
+        });
+      }
+      askforusername()
+      connect();
+    </script>
+  </body>
+</html>
